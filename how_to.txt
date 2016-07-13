@@ -1,0 +1,15 @@
+ __________________________________________________________
+|                                                          |
+| WARNING: ALL INFORMATIONS ARE OUTDATED		   |
+|							   |
+| How to use my app:                                       |
+| I.   You must have 3 files with *.html extention:        |
+|      - TEMPLATE                                          |
+|      - GENERATED                                         |
+|      - PREVIOUS_POST                                     |
+| II.  That files are inside folder with application.      |
+| III. In TEMPLATE.html you can write your HTML code whose |
+|      will be used as template for generator.             |
+| IV.  In GENERATED.html you can see your ready-to-paste   |
+|      code.                                               |
+|__________________________________________________________|
