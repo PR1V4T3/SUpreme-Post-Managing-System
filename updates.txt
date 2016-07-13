@@ -1,0 +1,12 @@
+ __________________________________________________________ 
+|                                                          |
+| To do:                                                   |
+| - settings                                               |
+| - auto-randomizing hints in menu                         |
+| - parser                                                 |
+|                                                          |
+| Features in upcoming UAMS 2:                             |
+| - modern, flat designed GUI                              |
+| - auto-pasting to HTML file                              |
+| - sending HTML file to FTP server                        |
+|__________________________________________________________|
