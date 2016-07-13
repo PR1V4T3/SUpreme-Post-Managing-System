@@ -6,16 +6,6 @@
 
 /* COMMENTS & OTHERS
 
-    /////// TO DO //////////////////////////////////////////////////////////////////////////////
-    //                                                                                        //
-    //  - kopiowanie z templatki do pliku generated.txt                                       //
-    //  - wprowadzanie danych do pliku [SKOŃCZONE] -> fillFile()                              //
-    //  - dodac plik PREVIOUS_POST.txt do przechowywania ostatniego artykuły na wszelki wypadek [  //
-    //  - parser do automatycznego odczytywania miejsca gdzie ma być wklejony dany tekst bez  //
-    //    używania seekg; odnajdywane w miejscu komentarza HTML                               //
-    //                                                                                        //
-    ////////////////////////////////////////////////////////////////////////////////////////////
-
     ////// IMPORTANT /////////////////////////////////////////////////////////////////////////////////////
     //                                                                                                  //
     //  - zle ustawione seekg uszkadza plik, wychodzenie poza istniejącą liczbe znaków jest zabronione  //
@@ -23,222 +13,313 @@
     //////////////////////////////////////////////////////////////////////////////////////////////////////
 */
 
-void fillFile(){
-/*
-    /////// TO DO ///////////////////////////////
-    //                                         //
-    //  - dodac wprowadzanie danych do pliku   //
-    //                                         //
-    /////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    fstream HTML_TEMPLATE;
-    fstream HTML
-    fstream HTML_GENERATED;
+void anyKey(){
 
-    HTML_GENERATED.open("/home/mrprivate/Artykuły/GENERATED");
-    HTML_TEMPLATE.open("/home/mrprivate/Artykuły/TEMPLATE");
-
-    string upload;
-
-    cin >> upload;
-    HTML_GENERATED << upload;
-
-    HTML_GENERATED.seekg(5);
-*/
+    char anyKey;
+    cout << "Press any key and enter to continue. \n";
+    cin >> anyKey;
 }
 
-void editor(){
-/*
-    fstream HTML_TEMPLATE;
-    fstream HTML_GENERATED;
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    HTML_GENERATED.open("/home/mrprivate/Artykuły/GENERATED");
-    HTML_TEMPLATE.open("/home/mrprivate/Artykuły/TEMPLATE");
-*/
+bool fileStatus(bool isShowInformation = false){                            // DONE
 
-    fillFile();
+    fstream APPLICATION_CONFIG;
+    fstream TEMPLATE;
+    fstream TEMPORARY;
+    fstream PARSER_CONFIG;
+
+    APPLICATION_CONFIG.open ("APPLICATION_CONFIG.txt"   );
+    TEMPLATE.open           ("TEMPLATE.txt"             );
+    TEMPORARY.open          ("TEMPORARY.txt"            );
+    PARSER_CONFIG.open      ("PARSER_CONFIG.txt"        );
+
+        if(isShowInformation == true){
+
+        cout << " __________________________________________________________ \n";
+        cout << "|                                                          |\n";
+
+        if(APPLICATION_CONFIG.is_open() == true){
+        cout << "| - APPLICATION_CONFIG.txt     ||   STATUS: GOOD           |\n";
+        }else
+        cout << "| - APPLICATION_CONFIG.txt     ||   STATUS: BAD            |\n";
+
+        if(TEMPLATE.is_open() == true){
+        cout << "| - TEMPLATE.txt               ||   STATUS: GOOD           |\n";
+        }else
+        cout << "| - TEMPLATE.txt               ||   STATUS: BAD            |\n";
+
+        if(TEMPORARY.is_open() == true){
+        cout << "| - TEMPORARY.txt              ||   STATUS: GOOD           |\n";
+        }else
+        cout << "| - TEMPORARY.txt              ||   STATUS: BAD            |\n";
+
+        if(PARSER_CONFIG.is_open() == true){
+        cout << "| - PARSER_CONFIG.txt          ||   STATUS: GOOD           |\n";
+        }else
+        cout << "| - PARSER_CONFIG.txt          ||   STATUS: BAD            |\n";
+
+        if(APPLICATION_CONFIG.is_open() && TEMPLATE.is_open() && TEMPORARY.is_open() && PARSER_CONFIG.is_open() == true){
+
+        cout << "|                                                          |\n";
+        cout << "| * nothing has changed                                    |\n";
+        }
+
+        cout << "|__________________________________________________________|\n";
+        }
+
+    bool errorFlag = APPLICATION_CONFIG.is_open() && TEMPLATE.is_open() && TEMPORARY.is_open() && PARSER_CONFIG.is_open();
+
+    APPLICATION_CONFIG.close();
+    TEMPLATE.close();
+    TEMPORARY.close();
+    PARSER_CONFIG.close();
+
+    return errorFlag;
 }
 
-void editorLauncher(){
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    char if_picker;
-    cout << "Do you want create new article? y/n \n";
-    cin >> if_picker;
-    if(if_picker == 'y') editor();
+void overwriteFiles(string systemCommand = "gedit"){                        // DONE
+
+    fstream APPLICATION_CONFIG;
+    fstream TEMPLATE;
+    fstream TEMPORARY;
+    fstream PARSER_CONFIG;
+
+    APPLICATION_CONFIG.open ("APPLICATION_CONFIG.txt"   );
+    TEMPLATE.open           ("TEMPLATE.txt"             );
+    TEMPORARY.open          ("TEMPORARY.txt"            );
+    PARSER_CONFIG.open      ("PARSER_CONFIG.txt"        );
+
+        if(APPLICATION_CONFIG.is_open() == false ){
+
+            systemCommand += " APPLICATION_CONFIG.txt";
+            system( systemCommand.c_str() );
+        }
+
+        if(TEMPLATE.is_open() == false ){
+
+            systemCommand += " TEMPLATE.txt";
+            system( systemCommand.c_str() );
+        }
+
+        if(TEMPORARY.is_open() == false ){
+
+            systemCommand += " TEMPORARY.txt";
+            system( systemCommand.c_str() );
+        }
+
+        if(PARSER_CONFIG.is_open() == false ){
+
+            systemCommand += " PARSER_CONFIG.txt";
+            system( systemCommand.c_str() );
+        }
+
+    APPLICATION_CONFIG.close();
+    TEMPLATE.close();
+    TEMPORARY.close();
+    PARSER_CONFIG.close();
 }
 
-void lastArticle(){
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    fstream HTML_GENERATED;
-    HTML_GENERATED.open("/home/mrprivate/Artykuły/DOC.html");
+void repairApplication(){                                                   // DONE
+
+    bool endLoop = false;
+
+    do{
+
+        fileStatus(true);
+
+        if(fileStatus() == false){
+
+        cout << " __________________________________________________________ \n";
+        cout << "|                                                          |\n";
+        cout << "| Application can't open important files so, app will      |\n";
+        cout << "| overwrite them. What applicaton want you use for repair? |\n";
+        cout << "| The best are text editors like gEdit or Vi.              |\n";
+        cout << "|__________________________________________________________|\n";
+        cout << "\n";
+
+        string systemCommand;
+        cin >> systemCommand;
+
+        overwriteFiles(systemCommand);
+
+        }
+
+    endLoop = fileStatus();
+
+    }while(endLoop == false);
+
+    anyKey();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void textService(string filePath, string mode = "txt"){                     // DONE
+
+    if(fileStatus() == true){
+
+        fstream textFile;
+        string textShow = "";
+
+        textFile.open(filePath.c_str());
+
+        if(mode == "txt"){
+
+            do{
+
+            getline(textFile, textShow);
+            cout << textShow << endl;
+
+            }while(textFile.eof() == false);
+        }
+
+        if(mode == "html"){
+
+            do{
+
+            getline(textFile, textShow);
+            cout << textShow << endl;
+
+            }while(textShow != "<-- EOF !-->");
+        }
+
+        textFile.close();
+
+    }else repairApplication();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void editor(){                                                              // TODO
+
+    system("clear");
+    cout << "Editor is running. ";
+
+    anyKey();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void theLatestPost(){                                                       // DONE
 
     // w getline, enter jest liczony jako jeden znak
 
     string download;
     cout << " __________________________________________________________ \n";
     cout << "|                                                          |\n";
-    cout << "| Your last article will show in the bottom.               |\n";
+    cout << "| Your last generated HMTL code will show in the bottom.   |\n";
     cout << "|__________________________________________________________|\n\n";
     cout << "============================================================\n";
 
-        do{
-
-            getline(HTML_GENERATED, download);
-            cout << download << endl;
-
-        }while (download != "</html>");
+    textService("TEMPORARY.txt");
 
     cout << "============================================================ \n";
 
-    HTML_GENERATED.close();
+    anyKey();
+
 }
 
-void checkingFileAndLaunching(){
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    fstream HTML_GENERATED;
-    HTML_GENERATED.open("/home/mrprivate/Artykuły/GENERATED");
+void runEditor(){                                                           // DONE
+
+
+    if(fileStatus() == true){
 
     cout << " __________________________________________________________ \n";
     cout << "|                                                          |\n";
+    cout << "| File Status: files has checked and ready to work.        |\n";
+    cout << "|__________________________________________________________|\n\n";
+    cout << " __________________________________________________________ \n";
+    cout << "|                                                          |\n";
+    cout << "|  Do you want run Editor?   [y]/[n]                       |\n";
+    cout << "|__________________________________________________________|\n";
+    cout << "\n";
 
-    if(HTML_GENERATED.good()) {
+    char choose;
 
-        cout << "| File Status: the file is checked and ready to work       |\n";
-        cout << "|__________________________________________________________|\n";
-        HTML_GENERATED.close();
+    cin >> choose;
 
-        lastArticle();
-        editorLauncher();
+    switch(choose){
 
-    }else {
+    case 'y': editor();
+    break;
 
-        cout << "| File Status: the file doesn't exits                      |\n";
-        cout << "|__________________________________________________________|\n";
-        HTML_GENERATED.close();
+    case 'n':
+    break;
+
+    default:
+    break;
 
     }
 
+    }else if(fileStatus() == false) repairApplication();
+
 }
 
-void banner(){
-    cout << " __________________________________________________________ \n";
-    cout << "|==========================================================|\n";
-    cout << "|========     SUpreme Post Managing System       ==========|\n";
-    cout << "|========        by Dawid Rzenno @2016           ==========|\n";
-    cout << "|==========================================================|\n";
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void mainMenu(){                                                            // DONE
+
+    char pick;
+    bool endLoop = false;
+
+    do{
+
+    system("clear");
+
+        textService("banner.txt");
+        textService("updates.txt");
+        textService("menu.txt");
+
+
+        cin >> pick;
+
+        switch(pick){
+
+            case '1':
+            system("clear");
+            runEditor();
+            break;
+
+            case '2':
+            system("clear");
+            theLatestPost();
+            break;
+
+            case '3':
+            system("clear");
+            repairApplication();
+            break;
+
+            case '4':
+            system("clear");
+            textService("how_to.txt");
+            anyKey();
+            break;
+
+            case '5':
+            system("clear");
+            endLoop = true;
+            break;
+
+            default:
+            break;
+        }
+
+    }while(endLoop == false);
 }
-
-void helper(){
-
-    cout << "|                                                          |\n";
-    cout << "| How to use my app:                                       |\n";
-    cout << "| I.   You must have 2 files with *.html extention:        |\n";
-    cout << "|      - TEMPLATE                                          |\n";
-    cout << "|      - GENERATED                                         |\n";
-    cout << "|      - PREVIOUS_POST                                     |\n";
-    cout << "| II.  That files must be inside folder with application.  |\n";
-    cout << "| III. In TEMPLATE.txt you can write your HTML code whose  |\n";
-    cout << "|      will be used as template for generator.             |\n";
-    cout << "| IV.  In GENERATED.txt you can see your ready-to-paste    |\n";
-    cout << "|      code.                                               |\n";
-    cout << "|__________________________________________________________|\n";
-}
-
-void updates(){
-
-    cout << "|                                                          |\n";
-    cout << "| To do:                                                   |\n";
-    cout << "| - settings                                               |\n";
-    cout << "| - auto-randomizing hints in menu                         |\n";
-    cout << "| - *.txt files generator                                  |\n";
-    cout << "|                                                          |\n";
-    cout << "| Features in upcoming UAMS 2:                             |\n";
-    cout << "| - modern, flat designed GUI                              |\n";
-    cout << "| - auto-pasting to HTML file                              |\n";
-    cout << "| - sending HTML file to FTP server                        |\n";
-    cout << "|__________________________________________________________|\n";
-}
-
-void instalator(string whatFileNeeded){
-
-    cout << " __________________________________________________________ \n";
-    cout << "|                                                          |\n";
-    cout << "| What's called your text editor?                          |\n";
-    cout << "|__________________________________________________________|\n";
-    cout << endl;
-    cout << ":";
-
-    string nameOfApp = "gedit"; // default name
-    cin >> nameOfApp;
-
-    /////// TO DO ////////////////////////////////////////////////////////////
-    //                                                                      //
-    //  Dodac przeszukiwanie lokalnego repo i instalacje domyslnego gedit   //
-    //  jesli dana aplikacja nie jest zainstalowana na pc                   //
-    //                                                                      //
-    //////////////////////////////////////////////////////////////////////////
-
-    cout << " __________________________________________________________ \n";
-    cout << "|                                                          |\n";
-    cout << "| SPMS files will be install in folder including this      |\n";
-    cout << "| application                                              |\n";
-    cout << "|__________________________________________________________|\n";
-
-    cout << " __________________________________________________________ \n";
-    cout << "|                                                          |\n";
-    cout << "| Instalation has ended. There was/were created:           |\n";
-
-
-    if(whatFileNeeded == "template"){
-
-        system( nameOfApp + " TEMPLATE.html");
-        cout << "| - TEMPLATE.html                                          |\n";
-    }
-
-    if(whatFileNeeded == "generated"){
-
-        system( nameOfApp + "gedit GENERATED.html");
-        cout << "| - GENERATED.html                                         |\n";
-    }
-
-    if(whatFileNeeded == "previous_post"){
-
-        system( nameOfApp + "gedit PREVIOUS_POST.html");
-        cout << "| - PREVIOSU_POST.html                                     |\n";
-    }
-
-    cout << "|__________________________________________________________|\n";
-}
-
-void installAll(){
-
-    instalator("template");
-    instalator("generated");
-    instalator("previous_post");
-}
-
-void menu(){
-
-    banner();
-    helper();
-    updates();
-}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int main(){
 
-   // menu();
-   // checkingFileAndLaunching();
-
-    ///// TO DO ///////////////////////////////////////////////////////
-    //                                                               //
-    //  - dodac czyszczenie ekranu po wybraniu uruchomienia edytora  //
-    //                                                               //
-    ///////////////////////////////////////////////////////////////////
-
-   // fillFile();
-
-    installAll();
+    mainMenu();
 
     return 0;
-
 }
